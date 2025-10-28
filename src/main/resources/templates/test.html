@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:text="${session.sessionID}"></div>
+	<div th:text="${session.myTest}"></div>
+	<div>
+		<a th:href="@{/}">Home</a>
+	</div>
+</body>
+</html>
