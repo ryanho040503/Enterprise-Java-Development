@@ -1,0 +1,71 @@
+
+ <!--  
+ 	Author Name: Ho Hoang Duy     
+	Student ID: 991794661
+	Email Student : ryanho040503@gmail.com (Personal Email)
+	Date: Oct 28 2025 (Week 8)
+	Application Description : This small web application help user to add desired phone(s) to cart and then purchase those
+	Semester : 3nd
+	Course : Enterprise Java Development
+	Instructor : Pooja Kakkar
+	Email Instructor : kakkarpo@sheridan.desire2learn.com
+	Github : https://github.com/ryanho040503/Enterprise-Java-Development
+ -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Phone Store</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+	<header class="header-bar">
+	    <div class="store-title">Duy's Phone Store</div>
+	    <div class="cart-actions">
+	        <a class="btn secondary" th:href="@{/cart}">
+	            View Cart (<span th:text="${cartCount}">0</span>)
+	        </a>
+	        <a class="btn primary" th:href="@{/checkout}">Checkout</a>
+	    </div>
+	</header>
+	
+	<main class="container">
+    <h1>Available Phones</h1>
+    <div class="phone-grid">
+        <div class="phone-card" th:each="p : ${inventory}">
+            
+            <!-- Show the image based on model -->
+            <img th:src="@{'/images/' + ${p.model} + '.jpeg'}" 
+                 alt="Phone Image" 
+                 class="phone-img"/>
+
+            <!-- Phone information -->
+            <div class="phone-info">
+                <h2 th:text="${p.model}">Model</h2>
+                <p class="price">$<span th:text="${p.price}">0.00</span></p>
+            </div>
+
+            <!-- Adding to cart button -->
+            <form method="post" th:action="@{/insertPhone}" class="add-form">
+                <input type="hidden" name="id" th:value="${p.id}">
+                <input type="hidden" name="model" th:value="${p.model}">
+                <input type="hidden" name="price" th:value="${p.price}">
+                <button type="submit" class="btn add-btn">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+	</main>
+	
+	<table th:if="${session.phoneList != null AND session.phoneList != ''}">
+		<tr th:each="s : ${session.phoneList}">
+			<td th:text="${s.id}">ID</td>
+			<td th:text="${s.model}">Model</td>
+			<td th:text="${s.price}">Price</td>
+		</tr>
+	</table>
+	
+	
+</body>
+</html>

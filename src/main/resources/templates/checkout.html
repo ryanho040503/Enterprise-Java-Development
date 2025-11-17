@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<header class="header-bar">
+	    <h1>Purchase Receipt</h1>
+	</header>
+
+	<main class="container">
+	    <h2>Thank you for your purchase!</h2>
+
+	    <table class="cart-table" th:if="${cart != null and cart.size() > 0}">
+	        <tr>
+	            <th>No.</th>
+	            <th>Model</th>
+	            <th>Price</th>
+	        </tr>
+
+	        <tr th:each="c : ${cart}">
+	            <!-- Dùng ID làm số thứ tự -->
+	            <td th:text="${c.id}">1</td>
+	            <td th:text="${c.model}">iPhone 15</td>
+	            <td>$<span th:text="${c.price}">0.00</span></td>
+	        </tr>
+
+	        <tr>
+	            <td colspan="2"><strong>Total Paid:</strong></td>
+	            <td><strong>$<span th:text="${total}">0.00</span></strong></td>
+	        </tr>
+	    </table>
+	    
+	    <br>
+	    <a th:href="@{/}" class="btn secondary">Back to Home</a>
+	</main>
+</body>
+</html>

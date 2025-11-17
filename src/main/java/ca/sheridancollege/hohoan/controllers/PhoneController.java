@@ -1,0 +1,154 @@
+/*
+	Author Name: Ho Hoang Duy     
+	Student ID: 991794661
+	Email Student : ryanho040503@gmail.com (Personal Email)
+	Date: Oct 28 2025 (Week 8)
+	Application Description : This small web application help user to add desired phone(s) to cart and then purchase those
+	Semester : 3nd
+	Course : Enterprise Java Development
+	Instructor : Pooja Kakkar
+	Email Instructor : kakkarpo@sheridan.desire2learn.com
+	Github : https://github.com/ryanho040503/Enterprise-Java-Development
+ */
+
+package ca.sheridancollege.hohoan.controllers;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import ca.sheridancollege.hohoan.beans.Phone;
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+public class PhoneController {
+	
+//	cart : the cart of customer
+//	storeInventory : the inventory of Store
+//	cartCount : number of items in cart
+
+//	Global variable
+	List<Phone> cart;
+	
+//	Index page
+	@GetMapping("/")
+	public String showHome(Model model,HttpSession session) 
+	{
+//		Static "store inventory"
+		List<Phone> storeInventory = List.of
+		(
+//			Default phone
+			new Phone(1L, "iPhone 15", 1599.99),
+	        new Phone(2L, "Samsung Galaxy S24 Ultra", 1499.50),
+	        new Phone(3L, "Google Pixel 9 Pro", 1299.00),
+	        new Phone(4L, "OnePlus 13", 999.00)
+		);
+		
+//		To let "thymeleaf" know inventory object
+		model.addAttribute("inventory", storeInventory);
+		model.addAttribute("phone", new Phone());
+		
+// 		Get cart size to show in header/cart badge
+		List<Phone> cart = (List<Phone>) session.getAttribute("phoneList");
+		int cartCount = (cart == null) ? 0 : cart.size();
+		model.addAttribute("cartCount", cartCount);
+		
+		return "index";
+	}
+	
+//	Test session request
+	@GetMapping("/test")
+	public String goTest(HttpSession session, Model model) {
+		session.setAttribute("sessionID", session.getId());
+		if(session.isNew())
+			session.setAttribute("myTest", "New Session");
+		
+		else
+			session.setAttribute("myTest", "Welcome Back");
+		return "test";
+	}
+	
+//	View Cart
+	@GetMapping("/cart")
+	public String viewCart(HttpSession session, Model model, @ModelAttribute Phone phone) 
+	{
+//		Step 1 : Check session state 
+		if (session.isNew() || session.getAttribute("phoneList") == null) {
+			cart = new ArrayList<>(); // same thing with new ArrayList<Phone>()
+			session.setAttribute("phoneList", cart);
+		} else {
+			cart = (ArrayList<Phone>) session.getAttribute("phoneList");
+		}
+		
+//		Display to front-end
+		model.addAttribute("cart", cart);
+		
+//		.mapToDouble(Phone::getPrice) equivalent to phone -> phone.getPrice() then sum method to sum everything
+		double total = cart.stream().mapToDouble(Phone::getPrice).sum();
+		model.addAttribute("total", total);
+		
+		return "cart";
+	}
+	
+//	View Receipt
+	@GetMapping("/checkout")
+	public String checkout(HttpSession session, Model model) 
+	{
+		
+//		Step 1 : Check if the session is new or returned session
+		if (session.isNew() || session.getAttribute("phoneList") == null)
+			cart = new ArrayList<>();
+		else 
+			cart = (ArrayList<Phone>) session.getAttribute("phoneList");
+		
+//		Display for front-end
+		model.addAttribute("cart", cart);
+		
+//		.mapToDouble(Phone::getPrice) equivalent to phone -> phone.getPrice() then sum method to sum everything
+		double total = cart.stream().mapToDouble(Phone::getPrice).sum();
+		model.addAttribute("total", total);
+		return "checkout";
+	}
+	
+//	Add phone
+	@PostMapping("/insertPhone")
+	public String insertPhone(HttpSession session, Model model, @ModelAttribute Phone phone) 
+	{
+//		Step 1 : Check if the session is new or returned session
+		if (session.isNew() || session.getAttribute("phoneList") == null)
+			cart = new ArrayList<Phone>(); // same thing with = new ArrayList<>() because Java will implicitly understand it because we declared List<Phone> car before 
+		else 
+			cart = (ArrayList<Phone>) session.getAttribute("phoneList");
+		
+//		Step 2 : Add phone to the list from formBinding
+		cart.add(phone);
+		
+//		Static "store inventory"
+		List<Phone> storeInventory = List.of
+		(
+//			Default phone
+			new Phone(1L, "iPhone 15", 1599.99),
+	        new Phone(2L, "Samsung Galaxy S24 Ultra", 1499.50),
+	        new Phone(3L, "Google Pixel 9 Pro", 1299.00),
+	        new Phone(4L, "OnePlus 13", 999.00)
+		);
+		
+//		To let "thymeleaf" know the variables
+		model.addAttribute("inventory", storeInventory);
+		model.addAttribute("phone", new Phone());
+		int cartCount = cart.size();
+	    model.addAttribute("cartCount", cartCount);
+		
+//		Step 3 : setAttribute for the session with the "phoneList" to update and save list
+		session.setAttribute("phoneList", cart);
+		model.addAttribute("phone", new Phone());
+		
+		return "redirect:/";
+	}
+	
+}
