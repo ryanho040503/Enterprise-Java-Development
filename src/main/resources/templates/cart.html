@@ -1,10 +1,49 @@
+
+ <!--  
+ 	Author Name: Ho Hoang Duy     
+	Student ID: 991794661
+	Email Student : ryanho040503@gmail.com (Personal Email)
+	Date: Oct 28 2025 (Week 8)
+	Application Description : This small web application help user to add desired phone(s) to cart and then purchase those
+	Semester : 3nd
+	Course : Enterprise Java Development
+	Instructor : Pooja Kakkar
+	Email Instructor : kakkarpo@sheridan.desire2learn.com
+	Github : https://github.com/ryanho040503/Enterprise-Java-Development
+ -->
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Your Cart</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
+	<header class="header-bar">
+	    <div class="store-title">Your Cart</div>
+	    <div class="cart-actions">
+	        <a class="btn secondary" th:href="@{/}">Continue Shopping</a>
+	        <a class="btn primary" th:href="@{/checkout}">Proceed to Checkout</a>
+	    </div>
+	</header>
+
+	<main class="container">
+	    <h1>Cart Items</h1>
+	
+	    <table class="cart-table" th:if="${cart != null and cart.size() > 0}">
+	        <tr><th>ID</th><th>Model</th><th>Price</th></tr>
+	        <tr th:each="c : ${cart}">
+	            <td th:text="${c.id}">1</td>
+	            <td th:text="${c.model}">iPhone 15</td>
+	            <td>$<span th:text="${c.price}">0.00</span></td>
+	        </tr>
+	        <tr class="cart-total-row">
+	            <td colspan="2" class="total-label">Total:</td>
+	            <td class="total-value">$<span th:text="${total}">0.00</span></td>
+	        </tr>
+	    </table>
+	</main>
 </body>
 </html>

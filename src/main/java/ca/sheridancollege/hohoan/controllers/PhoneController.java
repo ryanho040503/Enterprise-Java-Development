@@ -51,6 +51,7 @@ public class PhoneController {
 		
 //		To let "thymeleaf" know inventory object
 		model.addAttribute("inventory", storeInventory);
+		model.addAttribute("phone", new Phone());
 		
 // 		Get cart size to show in header/cart badge
 		List<Phone> cart = (List<Phone>) session.getAttribute("phoneList");
@@ -96,15 +97,22 @@ public class PhoneController {
 	
 //	View Receipt
 	@GetMapping("/checkout")
-	public String checkout(HttpSession session, Model model) {
+	public String checkout(HttpSession session, Model model) 
+	{
+		
+//		Step 1 : Check if the session is new or returned session
 		if (session.isNew() || session.getAttribute("phoneList") == null)
 			cart = new ArrayList<>();
 		else 
 			cart = (ArrayList<Phone>) session.getAttribute("phoneList");
+		
+//		Display for front-end
 		model.addAttribute("cart", cart);
+		
+//		.mapToDouble(Phone::getPrice) equivalent to phone -> phone.getPrice() then sum method to sum everything
 		double total = cart.stream().mapToDouble(Phone::getPrice).sum();
 		model.addAttribute("total", total);
-		return "receipt";
+		return "checkout";
 	}
 	
 //	Add phone
@@ -120,11 +128,27 @@ public class PhoneController {
 //		Step 2 : Add phone to the list from formBinding
 		cart.add(phone);
 		
+//		Static "store inventory"
+		List<Phone> storeInventory = List.of
+		(
+//			Default phone
+			new Phone(1L, "iPhone 15", 1599.99),
+	        new Phone(2L, "Samsung Galaxy S24 Ultra", 1499.50),
+	        new Phone(3L, "Google Pixel 9 Pro", 1299.00),
+	        new Phone(4L, "OnePlus 13", 999.00)
+		);
+		
+//		To let "thymeleaf" know the variables
+		model.addAttribute("inventory", storeInventory);
+		model.addAttribute("phone", new Phone());
+		int cartCount = cart.size();
+	    model.addAttribute("cartCount", cartCount);
+		
 //		Step 3 : setAttribute for the session with the "phoneList" to update and save list
 		session.setAttribute("phoneList", cart);
 		model.addAttribute("phone", new Phone());
 		
-		return "index";
+		return "redirect:/";
 	}
 	
 }
